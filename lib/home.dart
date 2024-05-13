@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
     setState(() {
       subirArchivos = true;
     });
-    var baseUrl1 = "http://prd.autocentro.mx/api/lista-suc";
+    var baseUrl1 = "https://prd.autocentro.mx/api/lista-suc";
     http.Response response = await http.get(Uri.parse(baseUrl1));
     if (response.statusCode == 200) {
       var jsonL = json.decode(response.body);

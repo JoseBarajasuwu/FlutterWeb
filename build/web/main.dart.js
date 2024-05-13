@@ -58225,7 +58225,7 @@ p5(){var s=0,r=A.S(t.H),q=this,p
 var $async$p5=A.T(function(a,b){if(a===1)return A.P(b,r)
 while(true)switch(s){case 0:q.aB(new A.ZQ(q))
 s=2
-return A.Y(A.aoS(A.eI("http://prd.autocentro.mx/api/lista-suc")),$async$p5)
+return A.Y(A.aoS(A.eI("https://prd.autocentro.mx/api/lista-suc")),$async$p5)
 case 2:p=b
 if(p.b===200)q.aB(new A.ZR(q,B.c5.dl(A.aoE(A.amO(p.e).c.a.k(0,"charset")).dl(p.w))))
 else q.Jn()
