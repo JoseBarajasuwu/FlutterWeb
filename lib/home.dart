@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
     });
     var baseUrl1 = "http://subd.autocentro.mx/api/lista-suc";
     http.Response response = await http.get(Uri.parse(baseUrl1));
-    if (response.statusCode == 2002) {
+    if (response.statusCode == 200) {
       var jsonL = json.decode(response.body);
       setState(() {
         sucursal = jsonL;
