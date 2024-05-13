@@ -1,0 +1,10 @@
+^C:\USERS\DESARROLLOI\DESKTOP\PRUEBAS\PRUEBAS_WEB\BUILD\WINDOWS\X64\CMAKEFILES\525E8F25EC5F00F80D93C5745C562F32\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/Desarrolloi/Desktop/pruebas/pruebas_web/windows -BC:/Users/Desarrolloi/Desktop/pruebas/pruebas_web/build/windows/x64 --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/Desarrolloi/Desktop/pruebas/pruebas_web/build/windows/x64/pruebas_web.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

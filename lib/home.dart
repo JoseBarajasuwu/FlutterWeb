@@ -35,7 +35,6 @@ class _HomeState extends State<Home> {
       setState(() {
         sucursal = jsonL;
         subirArchivos = false;
-        print("1");
       });
     } else {
       showErrorStatusCode();
