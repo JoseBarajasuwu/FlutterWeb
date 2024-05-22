@@ -120,12 +120,7 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   )
-                : Text("${usuario}"),
-            // ElevatedButton(
-            //     onPressed: () {
-            //       Navigator.pushNamed(context, 'r');
-            //     },
-            //     child: Text("a"))
+                : Text(usuario),
           ],
         ),
       ),
