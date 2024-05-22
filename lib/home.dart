@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:postgres/postgres.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -12,15 +13,30 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int _counter = 0;
   bool subirArchivos = false;
-  void _incrementCounter() {
+  String usuario = "";
+  Future<void> sucursales() async {
+    final conn = await Connection.open(
+      Endpoint(
+        host: 'aws-0-us-west-1.pooler.supabase.com',
+        database: 'postgres',
+        port: 5432,
+        username: 'postgres.dosnjylifgwtfqzyzlih',
+        password: 'porqueria1324',
+      ),
+      // The postgres server hosted locally doesn't have SSL by default. If you're
+      // accessing a postgres server over the Internet, the server should support
+      // SSL and you should swap out the mode with `SslMode.verifyFull`.
+      settings: const ConnectionSettings(sslMode: SslMode.disable),
+    );
+    final result2 = await conn.execute(
+      Sql.named('SELECT * FROM "Usuario" WHERE "UsuarioID" = @id'),
+      parameters: {'id': '1'},
+    );
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      usuario = "${result2[0][1]}";
+      subirArchivos = false;
     });
+    print(result2[0][1]);
   }
 
   List<dynamic> sucursal = [];
@@ -31,10 +47,10 @@ class _HomeState extends State<Home> {
     var baseUrl1 = "https://prd.autocentro.mx/api/lista-suc";
     http.Response response = await http.get(Uri.parse(baseUrl1));
     if (response.statusCode == 200) {
+      sucursales();
       var jsonL = json.decode(response.body);
       setState(() {
         sucursal = jsonL;
-        subirArchivos = false;
       });
     } else {
       showErrorStatusCode();
@@ -103,19 +119,14 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                   )
-                : Text("${sucursal[0]["NombreSucursal"]}"),
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, 'r');
-                },
-                child: Text("a"))
+                : Text("${usuario}"),
+            // ElevatedButton(
+            //     onPressed: () {
+            //       Navigator.pushNamed(context, 'r');
+            //     },
+            //     child: Text("a"))
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
