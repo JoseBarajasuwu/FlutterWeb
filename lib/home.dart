@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:convert';
+import 'dart:io';
+import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart' as io;
+import 'package:shelf_router/shelf_router.dart' as shelf_router;
+
 import 'package:postgres/postgres.dart';
 
 class Home extends StatefulWidget {
@@ -14,7 +20,7 @@ class _HomeState extends State<Home> {
   int _counter = 0;
   bool subirArchivos = false;
   String usuario = "";
-  Future<void> sucursales() async {
+  Future<Response> sucursales() async {
     final conn = await Connection.open(
       Endpoint(
         host: 'aws-0-us-west-1.pooler.supabase.com',
@@ -28,17 +34,60 @@ class _HomeState extends State<Home> {
       // SSL and you should swap out the mode with `SslMode.verifyFull`.
       settings: const ConnectionSettings(sslMode: SslMode.disable),
     );
-    final result2 = await conn.execute(
+
+    final result = await conn.execute(
       Sql.named('SELECT * FROM "Usuario" WHERE "UsuarioID" = @id'),
       parameters: {'id': '1'},
     );
     setState(() {
-      usuario = "${result2[0][1]}";
+      usuario = "${result[0][1]}";
       subirArchivos = false;
-      //xd
     });
-    print(result2[0][1]);
+
+    await conn.close();
+
+    return Response.ok(jsonEncode({'usuario': usuario}),
+        headers: {'Content-Type': 'application/json'});
   }
+
+  void main() async {
+    final router = shelf_router.Router();
+
+    // Define una ruta para manejar las solicitudes HTTP GET en /sucursales
+    router.get('/sucursales', sucursales);
+
+    var handler =
+        const Pipeline().addMiddleware(logRequests()).addHandler(router);
+
+    var port = int.parse(Platform.environment['PORT'] ?? '8080');
+    var server = await io.serve(handler, '0.0.0.0', port);
+    print('Server listening on port ${server.port}');
+  }
+  // Future<void> sucursales() async {
+  //   final conn = await Connection.open(
+  //     Endpoint(
+  //       host: 'aws-0-us-west-1.pooler.supabase.com',
+  //       database: 'postgres',
+  //       port: 5432,
+  //       username: 'postgres.dosnjylifgwtfqzyzlih',
+  //       password: 'porqueria1324',
+  //     ),
+  //     // The postgres server hosted locally doesn't have SSL by default. If you're
+  //     // accessing a postgres server over the Internet, the server should support
+  //     // SSL and you should swap out the mode with `SslMode.verifyFull`.
+  //     settings: const ConnectionSettings(sslMode: SslMode.disable),
+  //   );
+  //   final result2 = await conn.execute(
+  //     Sql.named('SELECT * FROM "Usuario" WHERE "UsuarioID" = @id'),
+  //     parameters: {'id': '1'},
+  //   );
+  //   setState(() {
+  //     usuario = "${result2[0][1]}";
+  //     subirArchivos = false;
+  //     //xd
+  //   });
+  //   print(result2[0][1]);
+  // }
 
   List<dynamic> sucursal = [];
   Future<void> suc() async {
@@ -49,6 +98,7 @@ class _HomeState extends State<Home> {
     http.Response response = await http.get(Uri.parse(baseUrl1));
     if (response.statusCode == 200) {
       sucursales();
+      main();
       var jsonL = json.decode(response.body);
       setState(() {
         sucursal = jsonL;
