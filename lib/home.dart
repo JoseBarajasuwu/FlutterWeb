@@ -35,6 +35,7 @@ class _HomeState extends State<Home> {
     setState(() {
       usuario = "${result2[0][1]}";
       subirArchivos = false;
+      //xd
     });
     print(result2[0][1]);
   }
