@@ -20,49 +20,7 @@ class _HomeState extends State<Home> {
   int _counter = 0;
   bool subirArchivos = false;
   String usuario = "";
-  Future<Response> sucursales() async {
-    final conn = await Connection.open(
-      Endpoint(
-        host: 'aws-0-us-west-1.pooler.supabase.com',
-        database: 'postgres',
-        port: 5432,
-        username: 'postgres.dosnjylifgwtfqzyzlih',
-        password: 'porqueria1324',
-      ),
-      // The postgres server hosted locally doesn't have SSL by default. If you're
-      // accessing a postgres server over the Internet, the server should support
-      // SSL and you should swap out the mode with `SslMode.verifyFull`.
-      settings: const ConnectionSettings(sslMode: SslMode.disable),
-    );
 
-    final result = await conn.execute(
-      Sql.named('SELECT * FROM "Usuario" WHERE "UsuarioID" = @id'),
-      parameters: {'id': '1'},
-    );
-    setState(() {
-      usuario = "${result[0][1]}";
-      subirArchivos = false;
-    });
-
-    await conn.close();
-
-    return Response.ok(jsonEncode({'usuario': usuario}),
-        headers: {'Content-Type': 'application/json'});
-  }
-
-  void main() async {
-    final router = shelf_router.Router();
-
-    // Define una ruta para manejar las solicitudes HTTP GET en /sucursales
-    router.get('/sucursales', sucursales);
-
-    var handler =
-        const Pipeline().addMiddleware(logRequests()).addHandler(router);
-
-    var port = int.parse(Platform.environment['PORT'] ?? '8080');
-    var server = await io.serve(handler, '0.0.0.0', port);
-    print('Server listening on port ${server.port}');
-  }
   // Future<void> sucursales() async {
   //   final conn = await Connection.open(
   //     Endpoint(
@@ -88,6 +46,25 @@ class _HomeState extends State<Home> {
   //   });
   //   print(result2[0][1]);
   // }
+  Future<void> us() async {
+    setState(() {
+      subirArchivos = true;
+    });
+    const header = {"Content-type": "application/json"};
+    var jsonD =
+        '{"Pass" : "40bd001563085fc35165329ea1ff5c5ecbdbbeef","NombreUs":"JLB"}';
+    var baseUrl1 =
+        "https://ramdonriselaravel-production.up.railway.app/api/login";
+    http.Response response =
+        await http.post(Uri.parse(baseUrl1), body: jsonD, headers: header);
+    if (response.statusCode == 200) {
+      var jsonL = json.decode(response.body);
+      setState(() {
+        usuario = "${jsonL[0]["UsuarioID"]}";
+        subirArchivos = false;
+      });
+    }
+  }
 
   List<dynamic> sucursal = [];
   Future<void> suc() async {
@@ -97,8 +74,6 @@ class _HomeState extends State<Home> {
     var baseUrl1 = "https://prd.autocentro.mx/api/lista-suc";
     http.Response response = await http.get(Uri.parse(baseUrl1));
     if (response.statusCode == 200) {
-      sucursales();
-      main();
       var jsonL = json.decode(response.body);
       setState(() {
         sucursal = jsonL;
@@ -137,7 +112,7 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    suc();
+    us();
     super.initState();
   }
 
@@ -146,7 +121,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Titulo"),
+        title: Text("Cambios"),
       ),
       body: Center(
         child: Column(
